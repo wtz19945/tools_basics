@@ -1,6 +1,6 @@
 <mujoco model="cart pole">
     <compiler inertiafromgeom="true"/>
-
+    
     <option iterations="1" ls_iterations="5">
         <flag eulerdamp="disable"/>
     </option>
