@@ -62,6 +62,13 @@ def main(argv=None):
     initialized = False
     m = osqp.OSQP()
 
+    B = np.zeros((model.nv, model.nu))
+    # Iterate through all actuators and assign 1s at the correct positions
+    for i in range(model.nu):  # Loop over actuators
+        jnt_id = model.dof_jntid[i]  # Get the joint ID controlled by this actuator
+        B[jnt_id, i] = 1  # Assign 1 in the corresponding row and column
+
+    print(B)
     # Visualize and Simulate the system
     with mujoco.viewer.launch_passive(model, data) as viewer:
         while viewer.is_running():
