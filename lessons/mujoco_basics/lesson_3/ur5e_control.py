@@ -115,6 +115,14 @@ def main(argv=None):
             
             des_rot = np.array([-np.pi/2, 0.0, 0.0])
             rddot_des = kp * (des_rot - rot_ang) + kd * (np.zeros(3) - rot_vel)
+            
+            # Control Position
+            # endddot_des = np.hstack([xddot_des])
+
+            # jac_end = np.vstack([jacp])
+            # jacv_end = np.vstack([jacv])
+
+            # Control rotation and position
             endddot_des = np.hstack([xddot_des, rddot_des])
 
             jac_end = np.vstack([jacp,jacr])
