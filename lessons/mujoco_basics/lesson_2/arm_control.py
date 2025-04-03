@@ -10,12 +10,8 @@ import osqp
 import scipy.sparse as sparse
 from scipy.linalg import block_diag
 
-"""
-    In this file we will learn how to locate a mujoco xml file
-    and get its file path using the os module from the standard library.
-
-    We will also learn how to load the xml file and simulate the system.
-"""
+# Code for OSC using Quadratic Programming
+# Do pip install osqp to run the code
 
 
 def main(argv=None):
@@ -62,13 +58,6 @@ def main(argv=None):
     initialized = False
     m = osqp.OSQP()
 
-    B = np.zeros((model.nv, model.nu))
-    # Iterate through all actuators and assign 1s at the correct positions
-    for i in range(model.nu):  # Loop over actuators
-        jnt_id = model.dof_jntid[i]  # Get the joint ID controlled by this actuator
-        B[jnt_id, i] = 1  # Assign 1 in the corresponding row and column
-
-    print(B)
     # Visualize and Simulate the system
     with mujoco.viewer.launch_passive(model, data) as viewer:
         while viewer.is_running():

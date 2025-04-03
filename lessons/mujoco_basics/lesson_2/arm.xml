@@ -13,10 +13,10 @@
             <joint name="base_joint" type="hinge" axis="0 0 1"/>
             <joint name="link_1_joint" type="hinge" axis="0 1 0"/>
             <geom name="link_1_geom" type="capsule" size="0.01 0.1" pos="0 0 0.1" quat="1 0 0 0"/>
-            <geom name="link_1_joint_geom" type="cylinder" size="0.01 0.01" pos="0 0 0.2" quat="1 1 0 0"/>
+            <geom name="link_1_joint_geom" type="cylinder" size="0.01 0.01" pos="0 0 0.2" rgba="1 0 0 1" quat="1 1 0 0"/>
             <body name="link_2" pos="0 0 0.2">
                 <joint name="link_2_joint" type="hinge" axis="0 1 0"/>
-                <geom name="link_2_geom" type="capsule" size="0.01 0.1" pos="0 0 0.1" quat="1 0 0 0"/>
+                <geom name="link_2_geom" type="capsule" size="0.01 0.1" pos="0 0 0.1" rgba="1 0 0 1" quat="1 0 0 0"/>
                 <site name="end_effector" pos="0 0 0.2" size="0.01" type="sphere" rgba="1 0 0 1"/>
             </body>
         </body> 
