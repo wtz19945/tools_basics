@@ -61,11 +61,17 @@ def main(argv=None):
     u_dim = model.nu
     q_dim = model.nv
 
-    # Correct B matrix
-    B = np.vstack([
-        np.zeros((q_dim - u_dim, u_dim)),  # Non-actuated joints
-        np.eye(u_dim)                      # Actuated joints
-    ])
+    # This is the correct way to compute B matrix
+    actuator_moment = np.zeros((model.nu, model.nv))
+    mujoco.mju_sparse2dense(
+        actuator_moment,
+        data.actuator_moment.reshape(-1),
+        data.moment_rownnz,
+        data.moment_rowadr,
+        data.moment_colind.reshape(-1),
+    )
+
+    B = actuator_moment.T
 
     # OSC control
     hand_site = [
