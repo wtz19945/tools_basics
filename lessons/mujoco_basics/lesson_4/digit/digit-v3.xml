@@ -1,6 +1,9 @@
 <mujoco model='digit-v3'>
   <compiler angle='degree' eulerseq='xyz' meshdir='obj' texturedir='obj'/>
   <option integrator="implicitfast"/>
+  <!-- <option iterations="10" ls_iterations="5">
+    <flag eulerdamp="disable"/>
+  </option> -->
   <size nconmax='100' />
   <asset>
     <material name='collision' rgba='0.1 0.5 0.9 0.4'/> 
@@ -139,29 +142,28 @@
 
 
   </asset>
+  
   <default>
-    <!-- <default class="g1"> -->
-      <site rgba="1 0 0 1" size="0.02"/>
-      <joint armature="0.01" frictionloss=".3"/>
-      <position kp="500" dampratio="1" inheritrange="1"/>
-      <default class="visual">
-        <geom group="2" type="mesh" contype="0" conaffinity="0" density="0" material="metal"/>
-      </default>
-      <default class="collision">
-        <geom group="3" type="mesh"/>
+    <default  class='collision'>
+      <geom conaffinity='1' condim='3' contype='1'/>
         <default class="foot">
-          <geom type="sphere" size="0.005" priority="1" friction="0.6" condim="3"/>
+          <geom type="sphere" size="0.005" priority="1" friction="0.7" condim="3"/>
         </default>
-      </default>
-    <!-- </default> -->
+    </default>
+    <site rgba="1 0 0 1" size="0.01"/>
+    <position kp="450" dampratio="1" inheritrange="1"/>
+    <equality solimp='0.9 0.95 0.001 0.1 2' solref='0.001 1.1' />
+    <geom conaffinity='0' condim='1' contype='0' solref='0.005 1' />
+    <joint solreflimit='0.001 1' />
   </default>
+
  <worldbody>
     <!-- <geom name='ground' type='plane' size='0 0 1' conaffinity='15' condim='3' friction='0.7 0.01 0.005' pos='0 0 0' priority='100' /> -->
     <!-- <body name="box_and_sphere" pos='5 0 5' euler="0 0 0"> 
       <freejoint/>
       <geom type="sphere" name="green_sphere" pos=".2 .2 .2" size="0.5" rgba="0 1 0 1" class="collision"/>
     </body> -->
-    <body name='base' pos='0 0 0.916' euler='-0 0 -0'>
+    <body name='base' pos='0 0 0.956' euler='-0 0 -0'>
       <inertial pos='0.001637 0.0002 0.259307' mass='15.028392' fullinertia='0.375905 0.344193 0.098732 -8.8e-05 0.0085 6.6e-05' />
       <joint type='free' limited='false'/>
       <geom type='mesh' mesh='base-0' pos='0 0 0' euler='-0 0 -0' material='base-0'/>
@@ -243,12 +245,21 @@
                       <inertial pos='9e-06 -0.028084 -0.023204' mass='0.531283' fullinertia='0.00187 0.001616 0.000843 0 0 0.000566' />
                       <joint name='left-toe-roll' type='hinge' axis='0 0 1' range='-37 33' stiffness='0' frictionloss='0' damping='0' armature='0' limited='true' pos='0 0 0'/>
                       <geom type='mesh' mesh='left-toe-roll-0' pos='0 0 0' euler='-0 0 -0' material='left-toe-roll-0'/>
-                      <geom type='box' size='0.04 0.1175 0.0115' pos='0 -0.0437 -0.0255' euler='-60 0 0' friction='0.7 0.01 0.005' contype='4' conaffinity='3' mass='0.531283' rgba="1 0 0 1.0" class='collision'/>
+                      <!-- <geom type='box' size='0.04 0.1175 0.0115' pos='0 -0.0437 -0.0255' euler='-60 0 0' friction='0.7 0.01 0.005' contype='4' conaffinity='3' mass='0.531283' class='collision'/> -->
                       <!-- <geom class="foot" pos="-0.02 0.10245 -0.014" euler='-60 0 -0' />
                       <geom class="foot" pos="-0.02 -0.01505 -0.014" euler='-60 0 -0'/>
                       <geom class="foot" pos="0.02 0.10245 -0.014" euler='-60 0 -0'/>
                       <geom class="foot" pos="0.02 -0.01505 -0.014" euler='-60 0 -0'/> -->
                       <body name='left-foot' pos='0 -0.05456 -0.0315' euler='-60 0 -90'>
+                          <site name="foot1" pos="0.11245 0.04245 -0"/>
+                          <site name="foot2" pos="-0.11245 0.04245 -0"/>
+                          <site name="foot3" pos="0.11245 -0.04245 -0.0"/>
+                          <site name="foot4" pos="-0.11245 -0.04245 -0.0"/>
+                          
+                          <geom class="foot" pos="0.11245 0.04245 -0"/>
+                          <geom class="foot" pos="-0.11245 0.04245 -0"/>
+                          <geom class="foot" pos="0.11245 -0.04245 -0.0"/>
+                          <geom class="foot" pos="-0.11245 -0.04245 -0.0"/>
                       </body>
                     </body>
                   </body>
@@ -357,12 +368,21 @@
                       <inertial pos='9e-06 0.028084 -0.023204' mass='0.531283' fullinertia='0.00187 0.001616 0.000843 0 0 -0.000566' />
                       <joint name='right-toe-roll' type='hinge' axis='0 0 1' range='-33 37' stiffness='0' frictionloss='0' damping='0' armature='0' limited='true' pos='0 0 0'/>
                       <geom type='mesh' mesh='right-toe-roll-0' pos='0 0 0' euler='-0 0 -0' material='right-toe-roll-0'/>
-                      <geom type='box' size='0.04 0.1175 0.0115' pos='0 0.0437 -0.0255' euler='60 0 -0' friction='0.7 0.01 0.005' contype='2' conaffinity='1' mass='0.531283' rgba="0 0 0 0.0"  class='collision'/>
+                      <!-- <geom type='box' size='0.04 0.1175 0.0115' pos='0 0.0437 -0.0255' euler='60 0 -0' friction='0.7 0.01 0.005' contype='2' conaffinity='1' mass='0.531283' rgba="0 1 0 1.0"  class='collision'/> -->
                       <!-- <geom class="foot" pos="-0.02 0.10245 -0.014" euler='60 0 -0'/>
                       <geom class="foot" pos="-0.02 -0.01505 -0.014" euler='60 0 -0'/>
                       <geom class="foot" pos="0.02 0.10245 -0.014" euler='60 0 -0'/>
                       <geom class="foot" pos="0.02 -0.01505 -0.014" euler='60 0 -0'/> -->
                       <body name='right-foot' pos='0 0.05456 -0.0315' euler='60 0 90'>
+                          <site name="right-foot1" pos="0.11245 0.04245 -0"/>
+                          <site name="right-foot2" pos="-0.11245 0.04245 -0"/>
+                          <site name="right-foot3" pos="0.11245 -0.04245 -0.0"/>
+                          <site name="right-foot4" pos="-0.11245 -0.04245 -0.0"/>
+                          
+                          <geom class="foot" pos="0.11245 0.04245 -0"/>
+                          <geom class="foot" pos="-0.11245 0.04245 -0"/>
+                          <geom class="foot" pos="0.11245 -0.04245 -0.0"/>
+                          <geom class="foot" pos="-0.11245 -0.04245 -0.0"/>
                       </body>
                     </body>
                   </body>
@@ -433,7 +453,25 @@
     <position name='right-shoulder-yaw' joint='right-shoulder-yaw'/>
     <position name='right-elbow' joint='right-elbow'/>
   </actuator>
-</mujoco>
 
 
+  <keyframe>
+    <key name="digit_stand"
+      qpos="
+      0 0 0.956
+      1 0 0 0
+      0.31 0 0.3 0.19 0.0 0.0 0.0 0.0 -0.156 -0.12
+      -0.15 1.1 0.0 -0.145
+      -0.31 0 -0.3 -0.19 0.0 0.0 0.0 0.0 0.156 0.12
+      0.15 -1.1 0.0 0.145
+      "
+      ctrl="
+      0.31 0 0.3 0.19 0.0 -0.156 -0.12
+      -0.15 1.1 0.0 -0.145
+      -0.31 0 -0.3 -0.19 0.0 0.156 0.12
+      0.15 -1.1 0.0 0.145
+      "/>
+  </keyframe>
+
 </mujoco>
+

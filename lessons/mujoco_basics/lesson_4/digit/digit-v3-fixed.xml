@@ -155,7 +155,7 @@
     </body> -->
     <body name='base' pos='0 0 1.276' euler='-0 0 -0'>
       <inertial pos='0.001637 0.0002 0.259307' mass='15.028392' fullinertia='0.375905 0.344193 0.098732 -8.8e-05 0.0085 6.6e-05' />
-      <joint name = "base" type="slide" pos="0 0 0" axis="0 1 0" range="0 0"/>
+      <joint type='free' limited='false'/>
       <geom type='mesh' mesh='base-0' pos='0 0 0' euler='-0 0 -0' material='base-0'/>
       <geom type='mesh' mesh='base-1' pos='-0.001 0.091 0' euler='0 -90 0' material='base-1'/>
       <geom type='mesh' mesh='base-2' pos='-0.001 -0.091 0' euler='0 -90 0' material='base-2'/>

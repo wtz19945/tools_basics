@@ -1,0 +1,47 @@
+<mujoco model="MuJoCo Model">
+  <compiler angle="radian"/>
+
+  <option timestep="0.0002"/>
+
+  <asset>
+    <material name="blue_" rgba="0 0 1 1"/>
+    <material name="green" rgba="0 1 0 1"/>
+    <material name="red__" rgba="1 0 0 1"/>
+    <material name="white"/>
+  </asset>
+
+  <worldbody>
+    <geom size="10 10 0.1" pos="0 0 -5" type="plane" rgba="0.9 0 0 1"/>
+    <light pos="0 0 3" dir="0 0 -1" diffuse="0.5 0.5 0.5"/>
+    <body name="link_1">
+      <geom size="0.2 2" pos="0 0 2" type="cylinder" material="red__"/>
+      <site name="attach1" pos="0 0 4" size="0.02" rgba="1 0 1 1"/>
+      <body name="link_2">
+        <joint name="hinge_1" pos="0 0 0" axis="1 0 0"/>
+        <geom size="0.2 2" pos="0 2 0" quat="0.707107 0.707107 0 0" type="cylinder" material="blue_"/>
+        <body name="link_3" pos="0 4 0">
+          <joint name="hinge_2" pos="0 0 0" axis="1 0 0"/>
+          <geom size="0.2 2" pos="0 0 2" type="cylinder" material="green"/>
+          <body name="link_4" pos="0 0 4">
+            <joint name="hinge_3" pos="0 0 0" axis="1 0 0"/>
+            <geom size="0.2 2" pos="0 -2 0" quat="0.707107 0.707107 0 0" type="cylinder" material="white"/>
+            <site name="attach2" pos="0 0 0" size="0.02" rgba="0 1 1 1"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="link_1" body2="link_2"/>
+    <exclude body1="link_1" body2="link_3"/>
+    <exclude body1="link_1" body2="link_4"/>
+    <exclude body1="link_2" body2="link_3"/>
+    <exclude body1="link_2" body2="link_4"/>
+    <exclude body1="link_3" body2="link_4"/>
+  </contact>
+
+  <actuator>
+    <general name="actuator_motor" joint="hinge_1" ctrllimited="true" ctrlrange="-3 3" gear="10000 0 0 0 0 0"/>
+  </actuator>
+</mujoco>

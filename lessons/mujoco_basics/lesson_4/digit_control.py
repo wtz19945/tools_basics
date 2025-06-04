@@ -47,7 +47,7 @@ def initialize_configuration(data):
         "left-knee": 0.19,
         "left-shin": 0.0,
         "left-tarsus": 0.0,
-        "left-toe-pitch": -0.026,
+        "left-toe-pitch": -0.156,
         "left-toe-roll": -0.12,
         "left-shoulder-roll": -0.15,
         "left-shoulder-pitch": 1.1,
@@ -59,7 +59,7 @@ def initialize_configuration(data):
         "right-knee": -0.19,
         "right-shin": 0.0,
         "right-tarsus": 0.0,
-        "right-toe-pitch": 0.026,
+        "right-toe-pitch": 0.156,
         "right-toe-roll": 0.12,
         "right-shoulder-roll": 0.15,
         "right-shoulder-pitch": -1.1,
@@ -73,7 +73,7 @@ def initialize_configuration(data):
         "left-hip-pitch": 0.3,
         "left-knee": 0.19,
         "left-tarsus": 0.0,
-        "left-toe-pitch": -0.026,
+        "left-toe-pitch": -0.156,
         "left-toe-roll": -0.12,
         "left-shoulder-roll": -0.15,
         "left-shoulder-pitch": 1.1,
@@ -84,7 +84,7 @@ def initialize_configuration(data):
         "right-hip-pitch": -0.3,
         "right-knee": -0.19,
         "right-tarsus": 0.0,
-        "right-toe-pitch": 0.026,
+        "right-toe-pitch": 0.156,
         "right-toe-roll": 0.12,
         "right-shoulder-roll": 0.15,
         "right-shoulder-pitch": -1.1,
@@ -115,16 +115,21 @@ def main(argv=None):
 
     # Reset to keyframe
     initialize_configuration(data)
+    
+    # keyframe_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "digit_stand")
+    # mujoco.mj_resetDataKeyframe(model, data, keyframe_id)
+    # mujoco.mj_forward(model, data)
     mujoco.mj_forward(model, data)
 
     # Get control limits
     print(model.nv)
+    print(model.nv)
     print(model.nu)
     # Start visualization
     with mujoco.viewer.launch_passive(model, data) as viewer:
-        viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = True
-        viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTFORCE] = True
-        viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_TRANSPARENT] = True
+        # viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = True
+        # viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTFORCE] = True
+        # viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_TRANSPARENT] = True
         while viewer.is_running():
             # Compute Inertia Matrix
    
