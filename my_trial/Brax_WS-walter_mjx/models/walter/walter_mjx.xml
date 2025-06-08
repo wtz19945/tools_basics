@@ -1,0 +1,217 @@
+<mujoco model="walter_mjx">
+    <compiler angle="radian"/>
+
+    <option iterations="1" ls_iterations="5">
+        <flag eulerdamp="disable"/>
+    </option>
+
+    <asset>
+        <texture type="skybox" builtin="gradient" rgb1="1 1 1" rgb2=".63 .8 1" width="256" height="256"/>
+        <mesh name="thigh_mesh" file="assets/Thigh.stl"/>
+        <mesh name="shin_mesh" file="assets/Shin.stl"/>
+        <mesh name="wheel_mesh" file="assets/Wheel.stl"/>
+        <mesh name="body_mesh" file="assets/Body.stl"/>
+        <mesh name="head_mesh" file="assets/Head.stl"/>
+    </asset>
+
+    <default>
+        <default class="walter">
+            <geom contype="0" conaffinity="0" type="mesh"/>
+            <default class="walter/collision">
+                <geom group="3" contype="0" conaffinity="1"/>
+                <default class="walter/collision/wheel">
+                    <geom type="capsule" size="0.0565 0.001" solimp="0.015 1 0.031" friction="0.8 0.02 0.01"/>
+                    <joint type="hinge" axis="0 0 1" damping="0.1"/>
+                </default>
+            </default>
+            <default class="walter/body">
+                <geom mesh="body_mesh"/>
+            </default>
+            <default class="walter/thigh">
+                <geom mesh="thigh_mesh"/>
+            </default> 
+            <default class="walter/hip_joint">
+                <joint type="hinge" axis="0 0 1" armature="0.02" damping="2"/>
+            </default>
+            <default class="walter/shin">
+                <geom mesh="shin_mesh"/>
+            </default>
+            <default class="walter/knee_joint">
+                <joint type="hinge" axis="0 0 1" armature="0.02" damping="2"/>
+            </default>
+            <default class="walter/wheel">
+                <geom mesh="wheel_mesh"/>
+            </default>
+        </default>
+
+        <default class="knee_actuator">
+            <position kp="100" kv="10" forcerange="-16 16"/>
+        </default>
+        <default class="hip_actuator">
+            <position kp="300" kv="1" forcerange="-15 15"/> 
+        </default>
+        <default class="wheel_actuator">
+            <general gear="2" forcerange="-2.8 2.8"/>
+        </default>
+    </default>
+
+    <!-- WALTER MODEL -->
+    <worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
+        <!-- Rear Body Section -->
+        <body name="body" pos="0 0 0.4">
+            <freejoint name="body_joint"/>
+            <!-- TODO: Add correct inertia -->
+            <inertial pos="0 -0.05 0.03" mass="0.20157" diaginertia="0.0005212 0.000114 0.0005585"/>
+            <geom class="walter/body"/>
+
+            <!-- Back left thigh -->
+            <body name="bl_thigh" pos="-0.274 0.075 -0.0325" quat="0 0 1 1">
+                <inertial pos="0 -0.05 0.03" mass="0.20157" diaginertia="0.0005212 0.000114 0.0005585"/>
+                <joint name="bl_hip" class="walter/hip_joint"/>
+                <geom class="walter/thigh"/>
+                <!-- Back left shin -->
+                <body name="bl_shin" pos="0 -0.1 0.043" >
+                    <joint name="bl_knee" class="walter/knee_joint"/>
+                    <geom class="walter/shin"/>
+                    <!-- Back left wheels -->
+                    <body name="bl_wheel_1" pos="0.08 0 0.088">
+                        <geom class="walter/wheel"/>
+                        <geom class="walter/collision/wheel"/>
+                        <joint name="bl_wheel_1_joint" class="walter/collision/wheel"/>
+                        <site name="bl_wheel_1" type="sphere" size="0.0565" group="5"/>
+                    </body>
+                    <body name="bl_wheel_2" pos="-0.08 0 0.088">
+                        <geom class="walter/wheel"/>
+                        <geom class="walter/collision/wheel"/>
+                        <joint name="bl_wheel_2_joint" class="walter/collision/wheel"/>
+                        <site name="bl_wheel_2" type="sphere" size="0.0565" group="5"/>
+                    </body>
+                </body>
+            </body>
+
+            
+            <!-- Back right thigh -->
+            <body name="br_thigh" pos="-0.274 -0.075 -0.0325" quat="1 1 0 0">
+                <inertial pos="0 -0.05 0.03" mass="0.20157" diaginertia="0.0005212 0.000114 0.0005585"/>
+                <joint name="br_hip" class="walter/hip_joint"/>
+                <geom class="walter/thigh"/>
+                <!-- Back right shin -->
+                <body name="br_shin" pos="0 -0.1 0.043" >
+                    <joint name="br_knee" class="walter/knee_joint"/>
+                    <geom class="walter/shin"/>
+                    <!-- Back right wheels -->
+                    <body name="br_wheel_1" pos="0.08 0 0.088">
+                        <geom class="walter/wheel"/>
+                        <geom class="walter/collision/wheel"/>
+                        <joint name="br_wheel_1_joint" class="walter/collision/wheel"/>
+                        <site name="br_wheel_1" type="sphere" size="0.0565" group="5"/>
+                    </body>
+                    <body name="br_wheel_2" pos="-0.08 0 0.088">
+                        <geom class="walter/wheel"/>
+                        <geom class="walter/collision/wheel"/>
+                        <joint name="br_wheel_2_joint" class="walter/collision/wheel"/>
+                        <site name="br_wheel_2" type="sphere" size="0.0565" group="5"/>
+                    </body>
+                </body>
+            </body>
+
+
+
+            <!-- Front Body Section -->
+            <body name="head" pos="0.01 0 0">
+                <!-- TODO: Add correct inertia -->
+                <inertial pos="0 -0.05 0.03" mass="0.20157" diaginertia="0.0005212 0.000114 0.0005585"/>
+                <joint name="head_joint" type="hinge" axis="1 0 0" stiffness="0.05" range="-0.5 0.5"/>
+                <geom type="mesh" mesh="head_mesh"/>
+
+                <!-- Front left thigh -->
+                <body name="fl_thigh" pos="0.094 0.075 -0.0325" quat="0 0 1 1">
+                    <inertial pos="0 -0.05 0.03" mass="0.20157" diaginertia="0.0005212 0.000114 0.0005585"/>
+                    <joint name="fl_hip" class="walter/hip_joint"/>
+                    <geom class="walter/thigh"/>
+                    <!-- Back left shin -->
+                    <body name="fl_shin" pos="0 -0.1 0.043" >
+                        <joint name="fl_knee" class="walter/knee_joint"/>
+                        <geom class="walter/shin"/>
+                        <!-- Back left wheels -->
+                        <body name="fl_wheel_1" pos="0.08 0 0.088">
+                            <geom class="walter/wheel"/>
+                            <geom class="walter/collision/wheel"/>
+                            <joint name="fl_wheel_1_joint" class="walter/collision/wheel"/>
+                            <site name="fl_wheel_1" type="sphere" size="0.0565" group="5"/>
+                        </body>
+                        <body name="fl_wheel_2" pos="-0.08 0 0.088">
+                            <geom class="walter/wheel"/>
+                            <geom class="walter/collision/wheel"/>
+                            <joint name="fl_wheel_2_joint" class="walter/collision/wheel"/>
+                            <site name="fl_wheel_2" type="sphere" size="0.0565" group="5"/>
+                        </body>
+                    </body>
+                </body>
+
+                <!-- Front right thigh -->
+                <body name="fr_thigh" pos="0.094 -0.075 -0.0325" quat="1 1 0 0">
+                    <inertial pos="0 -0.05 0.03" mass="0.20157" diaginertia="0.0005212 0.000114 0.0005585"/>
+                    <joint name="fr_hip" class="walter/hip_joint"/>
+                    <geom class="walter/thigh"/>
+                    <!-- Back left shin -->
+                    <body name="fr_shin" pos="0 -0.1 0.043" >
+                        <joint name="fr_knee" class="walter/knee_joint"/>
+                        <geom class="walter/shin"/>
+                        <!-- Back left wheels -->
+                        <body name="fr_wheel_1" pos="0.08 0 0.088">
+                            <geom class="walter/wheel"/>
+                            <geom class="walter/collision/wheel"/>
+                            <joint name="fr_wheel_1_joint" class="walter/collision/wheel"/>
+                            <site name="fr_wheel_1" type="sphere" size="0.0565" group="5"/>
+                        </body>
+                        <body name="fr_wheel_2" pos="-0.08 0 0.088">
+                            <geom class="walter/wheel"/>
+                            <geom class="walter/collision/wheel"/>
+                            <joint name="fr_wheel_2_joint" class="walter/collision/wheel"/>
+                            <site name="fr_wheel_2" type="sphere" size="0.0565" group="5"/>
+                        </body>
+                    </body>
+                </body>
+            </body> 
+        </body>
+    </worldbody>
+
+    <!-- Defining the actuators -->
+    <actuator>
+        <position joint="fr_hip" class="hip_actuator"/>
+        <position joint="fr_knee" class="knee_actuator"/>
+        <general joint="fr_wheel_1_joint" class="wheel_actuator"/>
+        <general joint="fr_wheel_2_joint" class="wheel_actuator"/>
+        <position joint="fl_hip" class="hip_actuator"/>
+        <position joint="fl_knee" class="knee_actuator"/>
+        <general joint="fl_wheel_1_joint" class="wheel_actuator"/>
+        <general joint="fl_wheel_2_joint" class="wheel_actuator"/>
+        <position joint="br_hip" class="hip_actuator"/>
+        <position joint="br_knee" class="knee_actuator"/>
+        <general joint="br_wheel_1_joint" class="wheel_actuator"/>
+        <general joint="br_wheel_2_joint" class="wheel_actuator"/>
+        <position joint="bl_hip" class="hip_actuator"/>
+        <position joint="bl_knee" class="knee_actuator"/>
+        <general joint="bl_wheel_1_joint" class="wheel_actuator"/>
+        <general joint="bl_wheel_2_joint" class="wheel_actuator"/>
+    </actuator>
+
+    <keyframe>
+    <key name="home"
+        qpos="0 0 0.2
+            1 0 0 0
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.0 0.0"
+        ctrl="0 0 0 0
+             0 0 0 0
+             0 0 0 0
+             0 0 0 0"/>
+    </keyframe>
+
+</mujoco>

@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mujoco model="stairs_scene">
+  <asset/>
+  <worldbody>
+    <body name="stair_0" pos="-0.9636574095352295 -0.16244551583372746 0.019907603688683363">
+      <geom type="box" size="0.089 0.222 0.020" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_1" pos="-0.8119093473884338 -0.04998023018529252 0.009454931167921454">
+      <geom type="box" size="0.091 0.185 0.009" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_2" pos="-0.7870402159515202 0.5423465916035355 0.02234461127870831">
+      <geom type="box" size="0.079 0.133 0.022" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_3" pos="0.8236481937681119 0.020164516491206763 0.009603368127131143">
+      <geom type="box" size="0.098 0.148 0.010" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_4" pos="0.5551490735679114 0.6476831728476034 0.0221028211666639">
+      <geom type="box" size="0.067 0.150 0.022" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_5" pos="-0.7660958446419484 0.4235902248144441 0.02294797520268138">
+      <geom type="box" size="0.124 0.141 0.023" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_6" pos="0.49749306452180875 0.9797280946985878 0.0221237213537737">
+      <geom type="box" size="0.073 0.157 0.022" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_7" pos="-0.2183035395244346 0.84648129742307 0.007941587903691023">
+      <geom type="box" size="0.133 0.242 0.008" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_8" pos="-0.299887708913362 0.9105924794842348 0.01949932096551827">
+      <geom type="box" size="0.071 0.145 0.019" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_9" pos="-0.7378889314338948 -0.4737876916565482 0.013095368606770331">
+      <geom type="box" size="0.051 0.105 0.013" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_10" pos="0.5359801796000183 -0.38555590045506616 0.005925284446656738">
+      <geom type="box" size="0.076 0.117 0.006" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_11" pos="-0.8968933902620082 -0.49741738485564335 0.01941332782059265">
+      <geom type="box" size="0.054 0.216 0.019" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_12" pos="-0.942895550078771 0.3190721381124999 0.023388407456993856">
+      <geom type="box" size="0.128 0.220 0.023" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_13" pos="-0.5007960997877932 -0.768473920179062 0.016962226391960895">
+      <geom type="box" size="0.148 0.177 0.017" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_14" pos="0.5178956370636532 -0.0254749309550506 0.023211735469781485">
+      <geom type="box" size="0.137 0.124 0.023" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_15" pos="0.2667039108159166 0.6445040113232541 0.006412909336489017">
+      <geom type="box" size="0.102 0.119 0.006" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_16" pos="-0.5482344443179159 0.33390068585938426 0.011373465440488374">
+      <geom type="box" size="0.058 0.183 0.011" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_17" pos="-0.5810424350625996 0.8052713293910698 0.017193089984751712">
+      <geom type="box" size="0.085 0.132 0.017" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_18" pos="-0.1755938571618043 0.7303312323630342 0.0083401034865772">
+      <geom type="box" size="0.082 0.246 0.008" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_19" pos="0.13447392807709657 -0.9258468366677541 0.005102494794811506">
+      <geom type="box" size="0.066 0.101 0.005" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_20" pos="0.2665338741222807 -0.6341633617193141 0.016097098894323626">
+      <geom type="box" size="0.061 0.245 0.016" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_21" pos="-0.7495095732961745 -0.09097349195455506 0.00832013399848876">
+      <geom type="box" size="0.100 0.126 0.008" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_22" pos="-0.9131595507067489 -0.17677812138324844 0.0239720646758096">
+      <geom type="box" size="0.118 0.100 0.024" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_23" pos="-0.8055023210340766 -0.7350900959230158 0.01188184527727354">
+      <geom type="box" size="0.103 0.187 0.012" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_24" pos="0.6066615893945073 -0.45114422181156666 0.01796324049683212">
+      <geom type="box" size="0.120 0.116 0.018" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_25" pos="-0.9924946305753957 0.5012057167883688 0.013833827113956712">
+      <geom type="box" size="0.056 0.174 0.014" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_26" pos="-0.034934587617796886 0.6740465962456268 0.010854341017351317">
+      <geom type="box" size="0.079 0.248 0.011" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_27" pos="0.26765797699172933 -0.6600830269452251 0.0071223476399600825">
+      <geom type="box" size="0.099 0.245 0.007" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_28" pos="0.6653031902878834 -0.8381741271565177 0.019941601556767313">
+      <geom type="box" size="0.134 0.114 0.020" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_29" pos="0.7319777185946055 0.8409628200069248 0.0068322497143873265">
+      <geom type="box" size="0.127 0.110 0.007" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_30" pos="0.7533742602497755 -0.4784159813486346 0.01368216421712869">
+      <geom type="box" size="0.068 0.172 0.014" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_31" pos="0.4325627584705467 0.6632701523354281 0.020577688737918032">
+      <geom type="box" size="0.117 0.145 0.021" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_32" pos="0.2571370262448145 0.9811868056845818 0.020183564728006444">
+      <geom type="box" size="0.128 0.214 0.020" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_33" pos="-0.4351598850603564 0.781656113107752 0.02357555045024475">
+      <geom type="box" size="0.138 0.176 0.024" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_34" pos="-0.37047504032345824 0.9451816848109726 0.0234485456713376">
+      <geom type="box" size="0.098 0.134 0.023" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_35" pos="-0.8399988247574481 0.6290996171307379 0.0070958092037607685">
+      <geom type="box" size="0.124 0.115 0.007" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_36" pos="0.06955256581290858 0.9486154823810204 0.019134749665277402">
+      <geom type="box" size="0.106 0.169 0.019" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_37" pos="-0.8904908869487589 -0.5607520637928585 0.01911566154250359">
+      <geom type="box" size="0.063 0.161 0.019" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_38" pos="0.5702367986735395 0.24363712082625777 0.01102150518431574">
+      <geom type="box" size="0.082 0.101 0.011" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_39" pos="-0.523424977511642 0.09148347634016085 0.007264301168588451">
+      <geom type="box" size="0.053 0.152 0.007" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_40" pos="-0.034318678787280454 -0.7774788811720226 0.01904642268636741">
+      <geom type="box" size="0.073 0.212 0.019" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_41" pos="0.9979641840834639 0.9450350690044858 0.020807088326738395">
+      <geom type="box" size="0.113 0.245 0.021" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_42" pos="0.7016376655663412 0.21271915677452613 0.02005251230227555">
+      <geom type="box" size="0.069 0.206 0.020" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_43" pos="-0.6216705546918935 -0.8240636004412645 0.006316514048667204">
+      <geom type="box" size="0.131 0.181 0.006" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_44" pos="-0.8943828122029414 0.185447669713116 0.005429496720277682">
+      <geom type="box" size="0.064 0.170 0.005" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_45" pos="0.6030181996718393 0.6422436564171916 0.01479550686802934">
+      <geom type="box" size="0.121 0.240 0.015" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_46" pos="-0.4833081117775224 -0.8717472192462332 0.007747304078004891">
+      <geom type="box" size="0.094 0.234 0.008" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_47" pos="-0.08689948614518594 -0.6574166196298301 0.024579241862288683">
+      <geom type="box" size="0.103 0.226 0.025" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_48" pos="0.7774944166265112 -0.7205423530296704 0.009380306429371758">
+      <geom type="box" size="0.080 0.133 0.009" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="stair_49" pos="-0.7437662046262068 0.9173505930106138 0.018693279885546647">
+      <geom type="box" size="0.086 0.147 0.019" rgba="0.5 0.4 0.3 1" contype="1" conaffinity="1" friction="1 0.005 0.0001"/>
+    </body>
+  </worldbody>
+</mujoco>
