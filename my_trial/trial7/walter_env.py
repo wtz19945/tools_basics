@@ -197,8 +197,8 @@ class WalterEnv(PipelineEnv):
         # TODO: Useful to set thigh and knee with different initial angles?
         rng, key = jax.random.split(rng)
         shin_new = jax.random.uniform(key, (1,), minval=-3.14, maxval=3.14)
-        indices = jnp.array([17, 21])
-        # qpos = qpos.at[indices].set(shin_new)
+        indices = jnp.array([8, 12, 17, 21])
+        qpos = qpos.at[indices].set(shin_new)
         
         # qpos = qpos.at[7:].set(
         #     qpos[7:] + jax.random.uniform(key, (17,), minval=-.2, maxval=.2)

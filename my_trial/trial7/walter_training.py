@@ -72,8 +72,8 @@ make_networks_factory = functools.partial(
     policy_hidden_layer_sizes=(512, 256, 128), 
 )
 
-train = 1
-if train == 1:
+train = 0
+if train == 1:  
     num_timesteps = 50_000_000
 else:
     num_timesteps = 0
