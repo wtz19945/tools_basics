@@ -31,16 +31,17 @@ def get_config():
                     dict(
                         tracking_lin_vel=5.0,
                         tracking_ang_vel=3.2,
-                        lin_vel_z=-2.0,
+                        lin_vel_z=-0.0,
                         ang_vel_xy=-0.15,
                         base_height=-0.0,
-                        orientation=-5.0,
-                        torques=-0.0025,
-                        action_rate=-0.1,
-                        action = -.1,
+                        orientation=-1.0,
+                        torques=-0.001,
+                        action_rate=-0.01,
+                        action = -.01,
                         termination=-100.0,
                         pose=-0.0,
                         shin_speed = 0.0,
+                        pos_progress = 5.0,
                     )
                 ),
                 # Tracking reward = exp(-error^2/sigma).
@@ -96,7 +97,7 @@ class WalterEnv(PipelineEnv):
                 kick_vel: float = 0.05,
                 **kwargs):
         
-        ROOT_PATH = epath.Path('/home/orl/Tianze/mujoco_work/tools_basics/my_trial/trial7')
+        ROOT_PATH = epath.Path('/home/user/Tianze_WS_Summer/tools_basics/my_trial/trial7')
         filepath = os.path.join(os.path.dirname(__file__), ROOT_PATH/'scene.xml')
         mj_model = mujoco.MjModel.from_xml_path(filepath)
         
@@ -192,7 +193,7 @@ class WalterEnv(PipelineEnv):
         yaw = jax.random.uniform(key, (1,), minval=-3.14, maxval=3.14)
         quat = mjx_math.axis_angle_to_quat(jnp.array([0, 0, 1]) , yaw)
         new_quat = math.quat_mul(qpos[3:7], quat)
-        qpos = qpos.at[3:7].set(new_quat)
+        # qpos = qpos.at[3:7].set(new_quat)
         
         # TODO: Useful to set thigh and knee with different initial angles?
         rng, key = jax.random.split(rng)
@@ -222,6 +223,7 @@ class WalterEnv(PipelineEnv):
             'last_vel': jnp.zeros(17),
             'rewards': {k: 0.0 for k in self.sys_config.rewards.scales.keys()},
             'kick': jnp.array([0.0, 0.0]),
+            'last_xpos': qpos[0:3],
         }
         
         metrics = {}
@@ -300,6 +302,7 @@ class WalterEnv(PipelineEnv):
             'termination': self._reward_termination(done, state.info['step']),
             'pose': self._reward_pose(pipeline_state.q[7:]),
             'shin_speed': self._reward_shin(pipeline_state.qd[6:]),
+            'pos_progress': self._reward_pos_progress(x, state.info['last_xpos'], state.info['command']),
         }
 
         rewards = {
@@ -319,7 +322,8 @@ class WalterEnv(PipelineEnv):
         state.info['step'] = jnp.where(
             done | (state.info['step'] > 1000), 0, state.info['step']
         )
-        
+        state.info['last_xpos'] = x.pos[0][:3]
+
         for k, v in rewards.items():
             state.metrics[f"reward/{k}"] = v
             
@@ -422,7 +426,16 @@ class WalterEnv(PipelineEnv):
         shin_error = jnp.sum(jnp.square(qvel[indices] - 0.2))
         shin_vel_reward = jnp.exp(-shin_error / self.sys_config.rewards.shin_vel_tracking_sigma)
         return shin_vel_reward
-        
+    
+    def _reward_pos_progress(self, x: Transform, last_xpos: jax.Array, command: jax.Array) -> jax.Array:
+        """Reward for the position progress."""
+        xpos = x.pos[0][:3]
+        pos_progress = xpos - last_xpos
+        pos_progress = math.rotate(pos_progress, math.quat_inv(x.rot[0]))
+        cmd_dir = command[0:2] / (jnp.linalg.norm(command[0:2]) + 1e-8)
+        progress_along_cmd = jnp.dot(pos_progress[0:2], cmd_dir)
+        return progress_along_cmd
+    
 envs.register_environment('Walter', WalterEnv)
 
 if __name__ == '__main__':

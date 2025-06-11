@@ -1,6 +1,6 @@
 <mujoco model="walter scene">
   <include file="WaLTER.xml"/>
-  <include file="stairs.xml"/>
+  <include file="stairsV2.xml"/>
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.1 0.1 0.1" specular="0.9 0.9 0.9"/>
     <rgba haze="0.15 0.25 0.35 1"/>

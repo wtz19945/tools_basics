@@ -30,6 +30,7 @@ from brax.mjx.base import State as MjxState
 from brax.training.agents.ppo import train as ppo
 from brax.training.agents.ppo import networks as ppo_networks
 from brax.io import html, mjcf, model
+from mujoco.mjx._src import math as mjx_math
 
 import time
 import numpy as np
@@ -72,9 +73,9 @@ make_networks_factory = functools.partial(
     policy_hidden_layer_sizes=(512, 256, 128), 
 )
 
-train = 0
+train = 1
 if train == 1:  
-    num_timesteps = 50_000_000
+    num_timesteps = 100_000_000
 else:
     num_timesteps = 0
 
@@ -126,7 +127,8 @@ the_command = jp.array([x_vel, y_vel, ang_vel])
 # initialize the state
 rng = jax.random.PRNGKey(0)
 state = jit_reset(rng)
-qvel = state.pipeline_state.qvel * 0 
+qvel = state.pipeline_state.qvel * 0
+
 state = state.tree_replace({'pipeline_state.qvel': qvel})
 state.info['command'] = the_command
 rollout = [state.pipeline_state]
