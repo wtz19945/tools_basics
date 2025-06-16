@@ -75,7 +75,7 @@ make_networks_factory = functools.partial(
 
 train = 1
 if train == 1:  
-    num_timesteps = 100_000_000
+    num_timesteps = 200_000_000
 else:
     num_timesteps = 0
 
@@ -118,7 +118,7 @@ jit_inference_fn = jax.jit(inference_fn)
 jit_reset = jax.jit(eval_env.reset)
 jit_step = jax.jit(eval_env.step)
 
-x_vel = -0.3  #@param {type: "number"}
+x_vel = 0.3  #@param {type: "number"}
 y_vel = 0.0  #@param {type: "number"}
 ang_vel = -0.0  #@param {type: "number"}
 

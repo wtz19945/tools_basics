@@ -21,6 +21,8 @@ import time
 import mujoco.viewer
 
 import math as pymath
+from walter_utils import get_sensor_data
+
 def get_config():
     """Returns reward config for g1 humanoid environment."""
 
@@ -32,16 +34,18 @@ def get_config():
                         tracking_lin_vel=5.0,
                         tracking_ang_vel=3.2,
                         lin_vel_z=-0.0,
-                        ang_vel_xy=-0.15,
+                        ang_vel_xy=-0.015,
                         base_height=-0.0,
-                        orientation=-1.0,
+                        orientation=-0.0,
                         torques=-0.001,
                         action_rate=-0.01,
                         action = -.01,
                         termination=-100.0,
                         pose=-0.0,
                         shin_speed = 0.0,
-                        pos_progress = 5.0,
+                        pos_progress = 1.0,
+                        stuck_vel = -1.0,
+                        stuck_contact = -1.0,
                     )
                 ),
                 # Tracking reward = exp(-error^2/sigma).
@@ -92,7 +96,7 @@ class WalterEnv(PipelineEnv):
     def __init__(self, 
                 obs_noise: float = 0.05,
                 action_scale: float = 0.3,
-                force_scale:  float = 16,
+                force_scale:  float = 20,
                 wheel_scale: float = 5,
                 kick_vel: float = 0.05,
                 **kwargs):
@@ -110,6 +114,7 @@ class WalterEnv(PipelineEnv):
 
         super().__init__(sys, backend='mjx', n_frames=n_frames)
         
+        self._mj_model = mj_model
         self._mjx_model = mjx.put_model(sys.mj_model)
         # set custom from kwargs
         for k, v in kwargs.items():
@@ -224,13 +229,15 @@ class WalterEnv(PipelineEnv):
             'rewards': {k: 0.0 for k in self.sys_config.rewards.scales.keys()},
             'kick': jnp.array([0.0, 0.0]),
             'last_xpos': qpos[0:3],
+            'pos_traj': jnp.zeros(3 * 15),
         }
         
         metrics = {}
         for k in self.sys_config.rewards.scales.keys():
             metrics[f"reward/{k}"] = jnp.zeros(())
         
-        obs = self._get_obs(pipeline_state, state_info)
+        obs_history = jnp.zeros(15 * 61)  # store 16 steps of history
+        obs = self._get_obs(pipeline_state, state_info, obs_history)
         reward, done = jnp.zeros(2)
         return State(pipeline_state, obs, reward, done, metrics, state_info) 
 
@@ -279,7 +286,7 @@ class WalterEnv(PipelineEnv):
         joint_angles = pipeline_state.q[7:]
         joint_vel = pipeline_state.qd[6:]
         
-        obs = self._get_obs(pipeline_state, state.info)
+        obs = self._get_obs(pipeline_state, state.info, state.obs)
         # done
         global_vec = pipeline_state.sensordata[self._global_vector_adr].ravel()
         fall_termination = global_vec[-1] < 0.0
@@ -303,6 +310,8 @@ class WalterEnv(PipelineEnv):
             'pose': self._reward_pose(pipeline_state.q[7:]),
             'shin_speed': self._reward_shin(pipeline_state.qd[6:]),
             'pos_progress': self._reward_pos_progress(x, state.info['last_xpos'], state.info['command']),
+            'stuck_vel': self._reward_stuck_vel(state.info['step'], state.info['command'], state.info['pos_traj']),
+            'stuck_contact': self._reward_stuck_contact(pipeline_state),
         }
 
         rewards = {
@@ -323,6 +332,7 @@ class WalterEnv(PipelineEnv):
             done | (state.info['step'] > 1000), 0, state.info['step']
         )
         state.info['last_xpos'] = x.pos[0][:3]
+        state.info['pos_traj'] = jnp.roll(state.info['pos_traj'], 3).at[:3].set(x.pos[0][:3])
 
         for k, v in rewards.items():
             state.metrics[f"reward/{k}"] = v
@@ -333,7 +343,7 @@ class WalterEnv(PipelineEnv):
         )
         return state
 
-    def _get_obs(self, pipeline_state: base.State, state_info: dict[str, Any]) -> jax.Array:
+    def _get_obs(self, pipeline_state: base.State, state_info: dict[str, Any], obs_history: jax.Array) -> jax.Array:
         gyro = pipeline_state.sensordata[self._gyro_vector_adr]
         linvel = pipeline_state.sensordata[self._linvel_vector_adr]
         gravity = pipeline_state.site_xmat[self._site_id].T @ jnp.array([0, 0, -1])
@@ -342,7 +352,7 @@ class WalterEnv(PipelineEnv):
         joint_vel = pipeline_state.qd[6:]
 
         # TODO: add noise and priviledged state?
-        state = jnp.hstack([
+        obs = jnp.hstack([
             linvel,  # 3
             gyro,  # 3
             gravity,  # 3
@@ -351,7 +361,9 @@ class WalterEnv(PipelineEnv):
             joint_vel,  # 16
             state_info["last_act"],  # 16
         ])
-        return state
+
+        obs = jnp.roll(obs_history, obs.size).at[:obs.size].set(obs)
+        return obs
 
     def sample_command(self, rng: jax.Array) -> jax.Array:
         rng1, rng2, rng3, rng4 = jax.random.split(rng, 4)
@@ -435,6 +447,34 @@ class WalterEnv(PipelineEnv):
         cmd_dir = command[0:2] / (jnp.linalg.norm(command[0:2]) + 1e-8)
         progress_along_cmd = jnp.dot(pos_progress[0:2], cmd_dir)
         return progress_along_cmd
+    
+    def _reward_stuck_vel(self, step: int, command: jax.Array, pos_traj: jax.Array) -> jax.Array:
+        """Reward for the stuck velocity."""
+        desired_distance = jnp.linalg.norm(command[:2]) * self.sys_config.ctrl_dt * 15
+        displacement = pos_traj[:2] - pos_traj[-3:-1]  # [x_now - x_then, y_now - y_then]
+        cmd_dir = command[:2] / (jnp.linalg.norm(command[:2]) + 1e-8)  # unit direction
+        # Project displacement along command direction
+        actual_distance = jnp.dot(displacement, cmd_dir)
+        actual_distance = jnp.maximum(actual_distance, 0.0)  # ignore backwards motion
+        # Reward based on how much it achieved the desired motion
+        reward = desired_distance - actual_distance
+        # Mask: only reward after 15 steps and if command is meaningful
+        reward = reward * (step >= 15) * (jnp.linalg.norm(command[:2]) > 0.1)
+        return jnp.clip(reward, -0.1, 1.0)
+
+    def _reward_stuck_contact(self, pipeline_state: base.State) -> jax.Array:
+        """Reward for the stuck contact."""
+        # Possible Direction: Penalize contact forces, timing, tangential velocity
+        # Detect a stair: height reward
+        hrr_force = get_sensor_data(self._mj_model, pipeline_state, 'hrr_force')
+        hrf_force = get_sensor_data(self._mj_model, pipeline_state, 'hrf_force')
+        hlr_force = get_sensor_data(self._mj_model, pipeline_state, 'hlr_force')
+        hlf_force = get_sensor_data(self._mj_model, pipeline_state, 'hlf_force')
+        trr_force = get_sensor_data(self._mj_model, pipeline_state, 'trr_force')
+        trf_force = get_sensor_data(self._mj_model, pipeline_state, 'trf_force')
+        tlr_force = get_sensor_data(self._mj_model, pipeline_state, 'tlr_force')
+        tlf_force = get_sensor_data(self._mj_model, pipeline_state, 'tlf_force')
+        return 0
     
 envs.register_environment('Walter', WalterEnv)
 
