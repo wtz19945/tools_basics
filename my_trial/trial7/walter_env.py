@@ -45,7 +45,7 @@ def get_config():
                         shin_speed = 0.0,
                         pos_progress = 1.0,
                         stuck_vel = -1.0,
-                        stuck_contact = -1.0,
+                        hip_tracking = -5.0,
                     )
                 ),
                 # Tracking reward = exp(-error^2/sigma).
@@ -133,7 +133,7 @@ class WalterEnv(PipelineEnv):
         self._init_q = jnp.array(sys.mj_model.keyframe('home').qpos)
         self._default_pose = sys.mj_model.keyframe('home').qpos[7:]
         self._default_ctrl = jnp.array(sys.mj_model.keyframe('home').ctrl)
-        
+        self._hip_indice = jnp.array([0, 4, 9, 13])  # indices of the hip joints
         # Joint Limits TODO: add limits
         self._lowers, self._uppers = sys.mj_model.jnt_range[1:].T
         c = (self._lowers + self._uppers) / 2
@@ -204,7 +204,7 @@ class WalterEnv(PipelineEnv):
         rng, key = jax.random.split(rng)
         shin_new = jax.random.uniform(key, (1,), minval=-3.14, maxval=3.14)
         indices = jnp.array([8, 12, 17, 21])
-        qpos = qpos.at[indices].set(shin_new)
+        # qpos = qpos.at[indices].set(shin_new)
         
         # qpos = qpos.at[7:].set(
         #     qpos[7:] + jax.random.uniform(key, (17,), minval=-.2, maxval=.2)
@@ -236,7 +236,7 @@ class WalterEnv(PipelineEnv):
         for k in self.sys_config.rewards.scales.keys():
             metrics[f"reward/{k}"] = jnp.zeros(())
         
-        obs_history = jnp.zeros(15 * 61)  # store 16 steps of history
+        obs_history = jnp.zeros(1 * 61)  # store 16 steps of history
         obs = self._get_obs(pipeline_state, state_info, obs_history)
         reward, done = jnp.zeros(2)
         return State(pipeline_state, obs, reward, done, metrics, state_info) 
@@ -261,12 +261,14 @@ class WalterEnv(PipelineEnv):
         
         # wheel rolling motion should not be centered at the defeault pos
         # TODO: shin might as well
-        m_tth = self._default_pose[0:8:4] + action[0:8:4] * self._action_scale
+        # m_tth = self._default_pose[0:8:4] + action[0:8:4] * self._action_scale
+        m_tth = action[0:8:4] * self._force_scale
         m_tsh = action[1:8:4] * self._force_scale
         m_tw1 = action[2:8:4] * self._wheel_scale
         m_tw2 = action[3:8:4] * self._wheel_scale
         
-        m_hth = self._default_pose[9::4] + action[8::4] * self._action_scale
+        # m_hth = self._default_pose[9::4] + action[8::4] * self._action_scale
+        m_hth = action[8::4] * self._force_scale
         m_hsh = action[9::4] * self._force_scale
         m_hw1 = action[10::4] * self._wheel_scale
         m_hw2 = action[11::4] * self._wheel_scale
@@ -311,7 +313,7 @@ class WalterEnv(PipelineEnv):
             'shin_speed': self._reward_shin(pipeline_state.qd[6:]),
             'pos_progress': self._reward_pos_progress(x, state.info['last_xpos'], state.info['command']),
             'stuck_vel': self._reward_stuck_vel(state.info['step'], state.info['command'], state.info['pos_traj']),
-            'stuck_contact': self._reward_stuck_contact(pipeline_state),
+            'hip_tracking': self._reward_hip_tracking(joint_angles),
         }
 
         rewards = {
@@ -362,7 +364,7 @@ class WalterEnv(PipelineEnv):
             state_info["last_act"],  # 16
         ])
 
-        obs = jnp.roll(obs_history, obs.size).at[:obs.size].set(obs)
+        # obs = jnp.roll(obs_history, obs.size).at[:obs.size].set(obs)
         return obs
 
     def sample_command(self, rng: jax.Array) -> jax.Array:
@@ -476,6 +478,11 @@ class WalterEnv(PipelineEnv):
         tlf_force = get_sensor_data(self._mj_model, pipeline_state, 'tlf_force')
         return 0
     
+    def _reward_hip_tracking(self, qpos: jax.Array) -> jax.Array:
+        """Reward for the hip tracking."""
+        hip_error = jnp.sum(jnp.square(qpos[self._hip_indice] - self._default_pose[self._hip_indice]))
+        return hip_error
+
 envs.register_environment('Walter', WalterEnv)
 
 if __name__ == '__main__':
