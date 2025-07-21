@@ -118,6 +118,8 @@
   <force name = "trf_force" site="torso_right_front_wheel_site"/>
   <force name = "tlr_force" site="torso_left_rear_wheel_site"/>
   <force name = "tlf_force" site="torso_left_front_wheel_site"/>
+  <force name = "torso_force" site="torso_site"/>
+  <force name = "head_force" site="head_site"/>
 </sensor>
     
   <actuator>
