@@ -40,12 +40,13 @@ def get_config():
                         torques=-0.001,
                         action_rate=-0.01,
                         action = -.01,
-                        termination=-100.0,
+                        termination=-1000.0,
                         pose=-0.0,
                         shin_speed = 0.0,
-                        pos_progress = 1.0,
-                        stuck_vel = -1.0,
-                        hip_tracking = -5.0,
+                        pos_progress = 0.0,
+                        stuck_vel = -0.0,
+                        hip_tracking = -0.0,
+                        contact = -0.01,
                     )
                 ),
                 # Tracking reward = exp(-error^2/sigma).
@@ -230,6 +231,7 @@ class WalterEnv(PipelineEnv):
             'kick': jnp.array([0.0, 0.0]),
             'last_xpos': qpos[0:3],
             'pos_traj': jnp.zeros(3 * 15),
+            'stuck_step': 0,
         }
         
         metrics = {}
@@ -261,14 +263,14 @@ class WalterEnv(PipelineEnv):
         
         # wheel rolling motion should not be centered at the defeault pos
         # TODO: shin might as well
-        # m_tth = self._default_pose[0:8:4] + action[0:8:4] * self._action_scale
-        m_tth = action[0:8:4] * self._force_scale
+        m_tth = self._default_pose[0:8:4] + action[0:8:4] * self._action_scale
+        # m_tth = action[0:8:4] * self._force_scale
         m_tsh = action[1:8:4] * self._force_scale
         m_tw1 = action[2:8:4] * self._wheel_scale
         m_tw2 = action[3:8:4] * self._wheel_scale
         
-        # m_hth = self._default_pose[9::4] + action[8::4] * self._action_scale
-        m_hth = action[8::4] * self._force_scale
+        m_hth = self._default_pose[9::4] + action[8::4] * self._action_scale
+        # m_hth = action[8::4] * self._force_scale
         m_hsh = action[9::4] * self._force_scale
         m_hw1 = action[10::4] * self._wheel_scale
         m_hw2 = action[11::4] * self._wheel_scale
@@ -292,8 +294,8 @@ class WalterEnv(PipelineEnv):
         # done
         global_vec = pipeline_state.sensordata[self._global_vector_adr].ravel()
         fall_termination = global_vec[-1] < 0.0
-        done = fall_termination | jnp.isnan(pipeline_state.q).any() | jnp.isnan(pipeline_state.qd).any() | (x.pos[0][2] < 0.05) 
-        done |= (pipeline_state.site_xpos[self._site_id_head].ravel()[2] < 0.05)
+        done = fall_termination | jnp.isnan(pipeline_state.q).any() | jnp.isnan(pipeline_state.qd).any() | (x.pos[0][2] < 0.1) 
+        done |= (pipeline_state.site_xpos[self._site_id_head].ravel()[2] < 0.1) | state.info['stuck_step'] > 100
         rewards = {
             'tracking_lin_vel': (
                 self._reward_tracking_lin_vel(state.info['command'], x, xd, pipeline_state)
@@ -314,6 +316,7 @@ class WalterEnv(PipelineEnv):
             'pos_progress': self._reward_pos_progress(x, state.info['last_xpos'], state.info['command']),
             'stuck_vel': self._reward_stuck_vel(state.info['step'], state.info['command'], state.info['pos_traj']),
             'hip_tracking': self._reward_hip_tracking(joint_angles),
+            'contact': self._reward_stuck_contact(pipeline_state),
         }
 
         rewards = {
@@ -335,6 +338,12 @@ class WalterEnv(PipelineEnv):
         )
         state.info['last_xpos'] = x.pos[0][:3]
         state.info['pos_traj'] = jnp.roll(state.info['pos_traj'], 3).at[:3].set(x.pos[0][:3])
+        
+        cur_vel_norm = jnp.sqrt(jnp.sum(jnp.square(xd.vel[0][:3])))
+        des_vel_norm = jnp.sqrt(jnp.sum(jnp.square(state.info['command'][:3])))
+        error = jnp.abs(cur_vel_norm - des_vel_norm) > 0.1
+        new_stuck_step = jnp.where(error, state.info['stuck_step'] + 1, 0)
+        state.info['stuck_step'] = new_stuck_step
 
         for k, v in rewards.items():
             state.metrics[f"reward/{k}"] = v
@@ -476,7 +485,16 @@ class WalterEnv(PipelineEnv):
         trf_force = get_sensor_data(self._mj_model, pipeline_state, 'trf_force')
         tlr_force = get_sensor_data(self._mj_model, pipeline_state, 'tlr_force')
         tlf_force = get_sensor_data(self._mj_model, pipeline_state, 'tlf_force')
-        return 0
+        head_force = get_sensor_data(self._mj_model, pipeline_state, 'head_force')
+        torso_force = get_sensor_data(self._mj_model, pipeline_state, 'torso_force')
+        # Penalize for smoother wheel force and avoid body contact force
+        wheel_force = jnp.sum(jnp.square(
+            jnp.array([trr_force, trf_force, tlr_force, tlf_force, hrr_force, hrf_force,hlr_force, hlf_force])
+        ))
+        body_force = jnp.sum(jnp.square(jnp.array([head_force, torso_force])))
+        # Penalize for the contact force
+        error = 1e-6 * (wheel_force + body_force)
+        return error
     
     def _reward_hip_tracking(self, qpos: jax.Array) -> jax.Array:
         """Reward for the hip tracking."""
