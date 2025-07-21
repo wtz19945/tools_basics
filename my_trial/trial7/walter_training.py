@@ -75,7 +75,7 @@ make_networks_factory = functools.partial(
 
 train = 1
 if train == 1:  
-    num_timesteps = 100_000_000
+    num_timesteps = 200_000_000
 else:
     num_timesteps = 0
 

@@ -8,11 +8,11 @@
   <default>
   	<geom condim="3" contype="0" conaffinity="0"/>
         <default class="hip_actuator">
-            <!-- <position kp="200" kv="10" forcerange="-16 16" /> -->
-            <general biastype="affine" gainprm="1" biasprm="0 0 0 0 0 0" forcelimited="true" gear="1 0 0 0 0 0" forcerange="-20 20"/>
+            <position kp="200" kv="10" forcerange="-16 16" /> 
+            <!-- <general biastype="affine" gainprm="1" biasprm="0 0 0 0 0 0" forcelimited="true" gear="1 0 0 0 0 0" forcerange="-16 16"/>-->
         </default>
         <default class="knee_actuator">
-            <general biastype="affine" gainprm="1" biasprm="0 0 0 0 0 0" forcelimited="true" gear="1 0 0 0 0 0" forcerange="-20 20"/>
+            <general biastype="affine" gainprm="1" biasprm="0 0 0 0 0 0" forcelimited="true" gear="1 0 0 0 0 0" forcerange="-16 16"/>
         </default>
         <default class="wheel_actuator">
             <!--<general gear="2" forcerange="-2.8 2.8"/>-->
@@ -25,7 +25,7 @@
     <body name="torso" pos="0 0 0.5">
       <joint name="torso_joint" type="free" limited="false" actuatorfrclimited="false"/>
       <site name="torso_site" pos="0 0 0.05" type="sphere" rgba="1 0 0 1"/> 
-      <geom size="0.125 0.075 0.05" type="box" mass="10" rgba="0.694118 0.65098 0.533333 1" contype="4" conaffinity="4"/>
+      <geom size="0.125 0.075 0.05" type="box" mass="10" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
       <body name="torso_left_thigh" pos="-0.02 0.075 0">
         <joint name="torso_left_thigh_joint" pos="0 0 0" axis="0 1 0" armature="0.0072" damping="5"/>
         <geom name="torso_left_thigh_geom" size="0.02 0.05" pos="0 0.02 -0.05" type="capsule" mass="0.5" rgba="0.694118 0.65098 0.533333 1"/>
@@ -35,12 +35,12 @@
           <body name="torso_left_front_wheel" pos="0.08 0.055 0">
             <site name="torso_left_front_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
             <joint name="torso_left_shin_front_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-            <geom name="torso_left_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+            <geom name="torso_left_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
           </body>
           <body name="torso_left_rear_wheel" pos="-0.08 0.055 0">
             <site name="torso_left_rear_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
             <joint name="torso_left_shin_rear_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-            <geom name="torso_left_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+            <geom name="torso_left_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
           </body>
         </body>
       </body>
@@ -53,19 +53,19 @@
           <body name="torso_right_front_wheel" pos="0.08 -0.055 0">
             <site name="torso_right_front_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
             <joint name="torso_right_shin_front_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-            <geom name="torso_right_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+            <geom name="torso_right_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
           </body>
           <body name="torso_right_rear_wheel" pos="-0.08 -0.055 0">
             <site name="torso_right_rear_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
             <joint name="torso_right_shin_rear_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-            <geom name="torso_right_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+            <geom name="torso_right_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
           </body>
         </body>
       </body>
       <body name="head" pos="0.3 0 0">
         <joint name="head_joint" pos="-0.125 0 0" axis="1 0 0" stiffness="10" range="-0.174533 0.174533" damping="1"/>
         <site name="head_site" pos="0 0 0.05" type="sphere" rgba="1 0 0 1"/> 
-        <geom size="0.125 0.075 0.05" type="box" mass="10" rgba="0.694118 0.65098 0.533333 1" contype="4" conaffinity="4"/>
+        <geom size="0.125 0.075 0.05" type="box" mass="10" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
         <body name="head_left_thigh" pos="0.02 0.075 0">
           <joint name="head_left_thigh_joint" pos="0 0 0" axis="0 1 0" armature="0.0072" damping="5"/>
           <geom name="head_left_thigh_geom" size="0.02 0.05" pos="0 0.02 -0.05" type="capsule" mass="0.5" rgba="0.694118 0.65098 0.533333 1"/>
@@ -75,12 +75,12 @@
             <body name="head_left_front_wheel" pos="0.08 0.055 0">
               <site name="head_left_front_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
               <joint name="head_left_shin_front_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-              <geom name="head_left_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+              <geom name="head_left_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
             </body>
             <body name="head_left_rear_wheel" pos="-0.08 0.055 0">
               <site name="head_left_rear_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
               <joint name="head_left_shin_rear_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-              <geom name="head_left_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+              <geom name="head_left_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
             </body>
           </body>
         </body>
@@ -93,12 +93,12 @@
             <body name="head_right_front_wheel" pos="0.08 -0.055 0">
               <site name="head_right_front_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
               <joint name="head_right_shin_front_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-              <geom name="head_right_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
+              <geom name="head_right_front_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3"/>
             </body>
             <body name="head_right_rear_wheel" pos="-0.08 -0.055 0">
               <site name="head_right_rear_wheel_site" pos="0 0 0" rgba="1 0 0 1"/>
               <joint name="head_right_shin_rear_wheel_joint" pos="0 0 0" axis="0 1 0" armature="1e-05" damping="0.2"/>
-              <geom name="head_right_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="cylinder" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3" />
+              <geom name="head_right_rear_wheel_geom" size="0.065 0.015" quat="0.707107 0.707107 0 0" type="capsule" solref="0.2 0.5" mass="0.5" rgba="0.694118 0.65098 0.533333 1" contype="3" conaffinity="3" />
             </body>
           </body>
         </body>
@@ -118,22 +118,24 @@
   <force name = "trf_force" site="torso_right_front_wheel_site"/>
   <force name = "tlr_force" site="torso_left_rear_wheel_site"/>
   <force name = "tlf_force" site="torso_left_front_wheel_site"/>
+  <force name = "torso_force" site="torso_site"/>
+  <force name = "head_force" site="head_site"/>
 </sensor>
     
   <actuator>
-    <general name="bl_hip" joint="torso_left_thigh_joint" class="hip_actuator"/>
+    <position name="bl_hip" joint="torso_left_thigh_joint" class="hip_actuator"/>
     <general name="bl_knee" joint="torso_left_thigh_shin_joint" class="knee_actuator"/>
     <general name="bl_wheel1_joint" joint="torso_left_shin_front_wheel_joint" class="wheel_actuator"/>
     <general name="bl_wheel2_joint" joint="torso_left_shin_rear_wheel_joint" class="wheel_actuator"/>
-    <general name="br_hip" joint="torso_right_thigh_joint" class="hip_actuator"/>
+    <position name="br_hip" joint="torso_right_thigh_joint" class="hip_actuator"/>
     <general name="br_knee" joint="torso_right_thigh_shin_joint" class="knee_actuator"/>
     <general name="br_wheel1_joint" joint="torso_right_shin_front_wheel_joint" class="wheel_actuator"/>
     <general name="br_wheel2_joint" joint="torso_right_shin_rear_wheel_joint" class="wheel_actuator"/>
-    <general name="fl_hip" joint="head_left_thigh_joint" class="hip_actuator"/>
+    <position name="fl_hip" joint="head_left_thigh_joint" class="hip_actuator"/>
     <general name="fl_knee" joint="head_left_thigh_shin_joint" class="knee_actuator"/>
     <general name="fl_wheel1_joint" joint="head_left_shin_front_wheel_joint" class="wheel_actuator"/>
     <general name="fl_wheel2_joint" joint="head_left_shin_rear_wheel_joint" class="wheel_actuator"/>
-    <general name="fr_hip" joint="head_right_thigh_joint" class="hip_actuator"/>
+    <position name="fr_hip" joint="head_right_thigh_joint" class="hip_actuator"/>
     <general name="fr_knee" joint="head_right_thigh_shin_joint" class="knee_actuator"/>
     <general name="fr_wheel1_joint" joint="head_right_shin_front_wheel_joint" class="wheel_actuator"/>
     <general name="fr_wheel2_joint" joint="head_right_shin_rear_wheel_joint" class="wheel_actuator"/>
