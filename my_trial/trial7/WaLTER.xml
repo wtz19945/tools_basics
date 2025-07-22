@@ -8,7 +8,7 @@
   <default>
   	<geom condim="3" contype="0" conaffinity="0"/>
         <default class="hip_actuator">
-            <position kp="200" kv="10" forcerange="-16 16" />
+            <position kp="20" kv="2" forcerange="-16 16" />
             <!-- <general biastype="affine" gainprm="1" biasprm="0 0 0 0 0 0" forcelimited="true" gear="1 0 0 0 0 0" forcerange="-20 20"/> -->
         </default>
         <default class="knee_actuator">

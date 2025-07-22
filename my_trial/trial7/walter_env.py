@@ -43,8 +43,8 @@ def get_config():
                         termination=-1000.0,
                         pose=-0.0,
                         shin_speed = 0.0,
-                        pos_progress = 0.0,
-                        stuck_vel = -0.0,
+                        pos_progress = 1.0,
+                        stuck_vel = -1.0,
                         hip_tracking = -0.0,
                         contact = -0.01,
                     )
@@ -102,7 +102,7 @@ class WalterEnv(PipelineEnv):
                 kick_vel: float = 0.05,
                 **kwargs):
         
-        ROOT_PATH = epath.Path('/home/user/Tianze_WS_Summer/tools_basics/my_trial/trial7')
+        ROOT_PATH = epath.Path('/home/orl/Tianze/mujoco_work/tools_basics/my_trial/trial7')
         filepath = os.path.join(os.path.dirname(__file__), ROOT_PATH/'scene.xml')
         mj_model = mujoco.MjModel.from_xml_path(filepath)
         
@@ -149,7 +149,7 @@ class WalterEnv(PipelineEnv):
             1, 0, 0, 0, 
             1, 0, 0, 0, 
         ])
-        self._site_id = sys.mj_model.site("torso_site").id
+        self._site_id_torso = sys.mj_model.site("torso_site").id
         self._site_id_head = sys.mj_model.site("head_site").id
         
         GRAVITY_SENSOR = "upvector"
@@ -232,6 +232,7 @@ class WalterEnv(PipelineEnv):
             'last_xpos': qpos[0:3],
             'pos_traj': jnp.zeros(3 * 15),
             'stuck_step': 0,
+            'no_error_steps': 0,
         }
         
         metrics = {}
@@ -253,7 +254,7 @@ class WalterEnv(PipelineEnv):
         kick *= jnp.mod(state.info['step'], push_interval) == 0
         qvel = state.pipeline_state.qvel  # pytype: disable=attribute-error
         qvel = qvel.at[:2].set(kick * self._kick_vel + qvel[:2])
-        state = state.tree_replace({'pipeline_state.qvel': qvel})
+        # state = state.tree_replace({'pipeline_state.qvel': qvel})
         
         # indices = jnp.arange(0, action.size, 4)
         # action = action.at[indices].set(0)
@@ -339,12 +340,8 @@ class WalterEnv(PipelineEnv):
         state.info['last_xpos'] = x.pos[0][:3]
         state.info['pos_traj'] = jnp.roll(state.info['pos_traj'], 3).at[:3].set(x.pos[0][:3])
         
-        cur_vel_norm = jnp.sqrt(jnp.sum(jnp.square(xd.vel[0][:3])))
-        des_vel_norm = jnp.sqrt(jnp.sum(jnp.square(state.info['command'][:3])))
-        error = jnp.abs(cur_vel_norm - des_vel_norm) > 0.1
-        new_stuck_step = jnp.where(error, state.info['stuck_step'] + 1, 0)
-        state.info['stuck_step'] = new_stuck_step
-
+        self._update_stuck_step(state, xd, cos_threshold=0.8, mag_threshold=0.1, reset_threshold=25)
+        
         for k, v in rewards.items():
             state.metrics[f"reward/{k}"] = v
             
@@ -353,11 +350,36 @@ class WalterEnv(PipelineEnv):
             pipeline_state=pipeline_state, obs=obs, reward=reward, done=done
         )
         return state
+    
+    def _update_stuck_step(state: State, xd: Motion, cos_threshold: float = 0.8, mag_threshold: float = 0.1, reset_threshold: int = 25):
+        # Get velocity direction and magnitude error
+        cur_vel = xd.vel[0][:3]
+        cmd_vel = state.info['command'][:3]
+        cur_norm = jnp.linalg.norm(cur_vel) + 1e-8
+        cmd_norm = jnp.linalg.norm(cmd_vel) + 1e-8
+        cos_angle = jnp.dot(cur_vel, cmd_vel) / (cur_norm * cmd_norm)
+        direction_error = cos_angle < cos_threshold
+        magnitude_error = jnp.abs(cur_norm - cmd_norm) > mag_threshold
+        error = (direction_error | magnitude_error) & (cmd_norm > 0.1)
+        # Increment stuck step when error
+        stuck_step_inc = jnp.where(error, state.info['stuck_step'] + 1, state.info['stuck_step'])
+        # Count consecutive no-error steps
+        no_error_steps_inc = jnp.where(error, 0, state.info.get('no_error_steps', 0) + 1)
+        # Reset stuck_step only if no-error steps exceed threshold
+        stuck_step_new = jnp.where(no_error_steps_inc > reset_threshold, 0, stuck_step_inc)
 
+        # Update state info
+        state.info['stuck_step'] = stuck_step_new
+        state.info['no_error_steps'] = no_error_steps_inc
+
+        return state
+        
+        
     def _get_obs(self, pipeline_state: base.State, state_info: dict[str, Any], obs_history: jax.Array) -> jax.Array:
         gyro = pipeline_state.sensordata[self._gyro_vector_adr]
         linvel = pipeline_state.sensordata[self._linvel_vector_adr]
-        gravity = pipeline_state.site_xmat[self._site_id].T @ jnp.array([0, 0, -1])
+        gravity = pipeline_state.site_xmat[self._site_id_torso].T @ jnp.array([0, 0, -1])
+        gravity_head = pipeline_state.site_xmat[self._site_id_head].T @ jnp.array([0, 0, -1])
         
         joint_angles = pipeline_state.q[7:]
         joint_vel = pipeline_state.qd[6:]
@@ -367,8 +389,10 @@ class WalterEnv(PipelineEnv):
             linvel,  # 3
             gyro,  # 3
             gravity,  # 3
+            gravity_head, # 3
             state_info["command"],  # 3
             joint_angles - self._default_pose,  # 17
+            joint_angles, # 17
             joint_vel,  # 16
             state_info["last_act"],  # 16
         ])
@@ -438,7 +462,7 @@ class WalterEnv(PipelineEnv):
     
     def _reward_termination(self, done: jax.Array, step: int) -> jax.Array:
         """Reward for the termination."""
-        return done & (step < 500)
+        return done & (step < 1000)
     
     def _reward_pose(self, qpos: jax.Array) -> jax.Array:
         return jnp.sum(jnp.square(qpos - self._default_pose) * self._weights)
@@ -455,8 +479,9 @@ class WalterEnv(PipelineEnv):
         xpos = x.pos[0][:3]
         pos_progress = xpos - last_xpos
         pos_progress = math.rotate(pos_progress, math.quat_inv(x.rot[0]))
+        pos_progress_norm = pos_progress[0:2] / (jnp.linalg.norm(pos_progress[0:2]) + 1e-8)  # normalize the progress vector
         cmd_dir = command[0:2] / (jnp.linalg.norm(command[0:2]) + 1e-8)
-        progress_along_cmd = jnp.dot(pos_progress[0:2], cmd_dir)
+        progress_along_cmd = jnp.dot(pos_progress_norm, cmd_dir)
         return progress_along_cmd
     
     def _reward_stuck_vel(self, step: int, command: jax.Array, pos_traj: jax.Array) -> jax.Array:
@@ -468,10 +493,9 @@ class WalterEnv(PipelineEnv):
         actual_distance = jnp.dot(displacement, cmd_dir)
         actual_distance = jnp.maximum(actual_distance, 0.0)  # ignore backwards motion
         # Reward based on how much it achieved the desired motion
-        reward = desired_distance - actual_distance
-        # Mask: only reward after 15 steps and if command is meaningful
+        reward = actual_distance / (desired_distance + 1e-8)
         reward = reward * (step >= 15) * (jnp.linalg.norm(command[:2]) > 0.1)
-        return jnp.clip(reward, -0.1, 1.0)
+        return jnp.clip(reward, 0.0, 1.0)
 
     def _reward_stuck_contact(self, pipeline_state: base.State) -> jax.Array:
         """Reward for the stuck contact."""
