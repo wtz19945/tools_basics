@@ -38,8 +38,8 @@ def get_config():
                         base_height=-0.0,
                         orientation=-0.0,
                         torques=-0.001,
-                        action_rate=-0.01,
-                        action = -.01,
+                        action_rate=-0.001,
+                        action = -.001,
                         termination=-1000.0,
                         pose=-0.0,
                         shin_speed = 0.0,
@@ -102,7 +102,7 @@ class WalterEnv(PipelineEnv):
                 kick_vel: float = 0.05,
                 **kwargs):
         
-        ROOT_PATH = epath.Path('/home/orl/Tianze/mujoco_work/tools_basics/my_trial/trial7')
+        ROOT_PATH = epath.Path('/home/user/Tianze_WS_Summer/tools_basics/my_trial/trial7')
         filepath = os.path.join(os.path.dirname(__file__), ROOT_PATH/'scene.xml')
         mj_model = mujoco.MjModel.from_xml_path(filepath)
         
@@ -340,7 +340,7 @@ class WalterEnv(PipelineEnv):
         state.info['last_xpos'] = x.pos[0][:3]
         state.info['pos_traj'] = jnp.roll(state.info['pos_traj'], 3).at[:3].set(x.pos[0][:3])
         
-        self._update_stuck_step(state, xd, cos_threshold=0.8, mag_threshold=0.1, reset_threshold=25)
+        self._update_stuck_step(state, xd, 0.8, 0.1, 25)
         
         for k, v in rewards.items():
             state.metrics[f"reward/{k}"] = v
@@ -351,7 +351,7 @@ class WalterEnv(PipelineEnv):
         )
         return state
     
-    def _update_stuck_step(state: State, xd: Motion, cos_threshold: float = 0.8, mag_threshold: float = 0.1, reset_threshold: int = 25):
+    def _update_stuck_step(self, state: State, xd: Motion, cos_threshold: float = 0.8, mag_threshold: float = 0.1, reset_threshold: int = 25):
         # Get velocity direction and magnitude error
         cur_vel = xd.vel[0][:3]
         cmd_vel = state.info['command'][:3]
