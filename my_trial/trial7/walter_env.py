@@ -102,7 +102,7 @@ class WalterEnv(PipelineEnv):
                 kick_vel: float = 0.05,
                 **kwargs):
         
-        ROOT_PATH = epath.Path('/home/user/Tianze_WS_Summer/tools_basics/my_trial/trial7')
+        ROOT_PATH = epath.Path(__file__).parent
         filepath = os.path.join(os.path.dirname(__file__), ROOT_PATH/'scene.xml')
         mj_model = mujoco.MjModel.from_xml_path(filepath)
         
